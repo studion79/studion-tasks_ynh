@@ -12,15 +12,25 @@ ynh_setup_source --dest_dir="$install_dir"
 chown -R "$app:www-data" "$install_dir"
 
 #=================================================
+# INSTALL NODE.JS
+#=================================================
+ynh_script_progression "Installing Node.js..."
+
+nodejs_version=20
+ynh_app_setting_set --key=nodejs_version --value=$nodejs_version
+ynh_nodejs_install
+ynh_app_setting_set --key=node_path --value="$(dirname "$ynh_node")"
+
+#=================================================
 # BUILD NODE.JS APP
 #=================================================
 ynh_script_progression "Installing Node.js dependencies and building the app..."
 
 pushd "$install_dir"
-npm ci 2>&1
-npx prisma generate 2>&1
-npm run build 2>&1
-npm prune --production 2>&1
+$ynh_npm ci 2>&1
+$ynh_npm exec -- prisma generate 2>&1
+$ynh_npm run build 2>&1
+$ynh_npm prune --production 2>&1
 popd
 
 #=================================================
@@ -55,7 +65,7 @@ chown -h "$app:www-data" "$install_dir/public/uploads"
 ynh_script_progression "Initializing the database..."
 
 pushd "$install_dir"
-LIBSQL_DATABASE_URL="file:$data_dir/db.sqlite" node scripts/apply-migrations.js 2>&1
+LIBSQL_DATABASE_URL="file:$data_dir/db.sqlite" "$ynh_node" scripts/apply-migrations.js 2>&1
 popd
 chown "$app:$app" "$data_dir/db.sqlite"
 
