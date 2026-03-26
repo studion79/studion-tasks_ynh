@@ -23,7 +23,7 @@ chown -h "$app:www-data" "$install_dir/public/uploads"
 ynh_script_progression "Rebuilding the app..."
 
 pushd "$install_dir"
-npm ci 2>&1
+npm ci --legacy-peer-deps 2>&1
 npx prisma generate 2>&1
 npm run build 2>&1
 npm prune --production 2>&1
