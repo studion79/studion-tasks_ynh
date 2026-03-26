@@ -59,3 +59,11 @@ ram.runtime = "150M"
     main.url = "/"
 
     [resources.ports]
+
+    [resources.apt]
+    packages = "nodejs"
+
+    [resources.apt.extras.nodesource]
+    repo = "deb https://deb.nodesource.com/node_20.x nodistro main"
+    key = "https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key"
+    packages = "nodejs"

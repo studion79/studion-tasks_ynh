@@ -20,21 +20,13 @@ ln -s "$data_dir/uploads" "$install_dir/public/uploads"
 chown -h "$app:www-data" "$install_dir/public/uploads"
 
 #=================================================
-ynh_script_progression "Installing Node.js..."
-
-nodejs_version=20
-ynh_app_setting_set --key=nodejs_version --value=$nodejs_version
-ynh_nodejs_install
-ynh_app_setting_set --key=node_path --value="$(dirname "$ynh_node")"
-
-#=================================================
 ynh_script_progression "Rebuilding the app..."
 
 pushd "$install_dir"
-$ynh_npm ci 2>&1
-$ynh_npm exec -- prisma generate 2>&1
-$ynh_npm run build 2>&1
-$ynh_npm prune --production 2>&1
+npm ci 2>&1
+npx prisma generate 2>&1
+npm run build 2>&1
+npm prune --production 2>&1
 popd
 
 #=================================================
@@ -51,7 +43,7 @@ chown "$app:$app" "$install_dir/.env"
 ynh_script_progression "Running database migrations..."
 
 pushd "$install_dir"
-LIBSQL_DATABASE_URL="file:$data_dir/db.sqlite" "$ynh_node" scripts/apply-migrations.js 2>&1
+LIBSQL_DATABASE_URL="file:$data_dir/db.sqlite" node scripts/apply-migrations.js 2>&1
 popd
 
 #=================================================
