@@ -54,6 +54,9 @@ chown -h "$app:www-data" "$install_dir/public/uploads"
 #=================================================
 ynh_script_progression "Initializing the database..."
 
+# Ensure a clean database on fresh install
+rm -f "$data_dir/db.sqlite"
+
 pushd "$install_dir"
 LIBSQL_DATABASE_URL="file:$data_dir/db.sqlite" node scripts/apply-migrations.js 2>&1
 popd
