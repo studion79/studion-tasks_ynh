@@ -1,0 +1,79 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression "Setting up source files..."
+
+ynh_setup_source --dest_dir="$install_dir"
+chown -R "$app:www-data" "$install_dir"
+
+#=================================================
+# BUILD NODE.JS APP
+#=================================================
+ynh_script_progression "Installing Node.js dependencies and building the app..."
+
+pushd "$install_dir"
+npm ci 2>&1
+npx prisma generate 2>&1
+npm run build 2>&1
+npm prune --production 2>&1
+popd
+
+#=================================================
+# APP CONFIGURATION
+#=================================================
+ynh_script_progression "Adding $app's configuration files..."
+
+auth_secret=$(ynh_string_random 64)
+ynh_app_setting_set --key=auth_secret --value="$auth_secret"
+
+ynh_config_add --template="app.env" --destination="$install_dir/.env"
+chmod 400 "$install_dir/.env"
+chown "$app:$app" "$install_dir/.env"
+
+#=================================================
+# DATA DIRECTORY AND UPLOADS SYMLINK
+#=================================================
+ynh_script_progression "Setting up data directory..."
+
+mkdir -p "$data_dir/uploads"
+chown -R "$app:$app" "$data_dir"
+chmod -R 750 "$data_dir"
+
+# Symlink uploads so Next.js can serve files from /public/uploads
+rm -rf "$install_dir/public/uploads"
+ln -s "$data_dir/uploads" "$install_dir/public/uploads"
+chown -h "$app:www-data" "$install_dir/public/uploads"
+
+#=================================================
+# DATABASE MIGRATION
+#=================================================
+ynh_script_progression "Initializing the database..."
+
+pushd "$install_dir"
+LIBSQL_DATABASE_URL="file:$data_dir/db.sqlite" node scripts/apply-migrations.js 2>&1
+popd
+chown "$app:$app" "$data_dir/db.sqlite"
+
+#=================================================
+# SYSTEM CONFIGURATION
+#=================================================
+ynh_script_progression "Adding system configurations related to $app..."
+
+ynh_config_add_nginx
+ynh_config_add_systemd
+yunohost service add "$app" --description="Task App service" --log="/var/log/$app/$app.log"
+ynh_config_add_logrotate
+
+#=================================================
+# START SERVICE
+#=================================================
+ynh_script_progression "Starting $app's service..."
+ynh_systemctl --service="$app" --action="start"
+
+#=================================================
+ynh_script_progression "Installation of $app completed"
