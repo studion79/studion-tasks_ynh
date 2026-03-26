@@ -7,7 +7,7 @@ name = "Task App"
 description.en = "Cross-project task and team management with Kanban, Gantt and calendar views"
 description.fr = "Gestion de tâches et d'équipes multi-projets avec vues Kanban, Gantt et calendrier"
 
-version = "0.1.7~ynh1"
+version = "0.1.8~ynh1"
 
 maintainers = ["studion79"]
 
@@ -45,8 +45,8 @@ ram.runtime = "150M"
 
 [resources]
     [resources.sources.main]
-    url = "https://github.com/studion79/studion-tasks/archive/refs/tags/v0.1.7.tar.gz"
-    sha256 = "2e6b648ad86a42b4e4594bb455a36ba2807b57382c555e128354252c3ec3ad8c"
+    url = "https://github.com/studion79/studion-tasks/archive/refs/tags/v0.1.8.tar.gz"
+    sha256 = "4f28fff27963a051382fdf57564fff56b72a182cb926ed17191616d5b8c25dec"
     autoupdate.strategy = "latest_github_tag"
 
     [resources.system_user]
