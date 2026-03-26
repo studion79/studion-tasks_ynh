@@ -14,11 +14,6 @@ ynh_script_progression "Upgrading source files..."
 ynh_setup_source --dest_dir="$install_dir" --full_replace --keep=".env"
 chown -R "$app:www-data" "$install_dir"
 
-# Re-create uploads symlink (wiped by full_replace)
-rm -rf "$install_dir/public/uploads"
-ln -s "$data_dir/uploads" "$install_dir/public/uploads"
-chown -h "$app:www-data" "$install_dir/public/uploads"
-
 #=================================================
 ynh_script_progression "Rebuilding the app..."
 
@@ -28,6 +23,11 @@ npx prisma generate 2>&1
 npm run build 2>&1
 npm prune --production --legacy-peer-deps 2>&1
 popd
+
+# Re-create uploads symlink AFTER build (Turbopack rejects symlinks pointing outside project root)
+rm -rf "$install_dir/public/uploads"
+ln -s "$data_dir/uploads" "$install_dir/public/uploads"
+chown -h "$app:www-data" "$install_dir/public/uploads"
 
 #=================================================
 ynh_script_progression "Updating $app's configuration..."
