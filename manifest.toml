@@ -7,7 +7,7 @@ name = "Task App"
 description.en = "Cross-project task and team management with Kanban, Gantt and calendar views"
 description.fr = "Gestion de tâches et d'équipes multi-projets avec vues Kanban, Gantt et calendrier"
 
-version = "0.1.8~ynh2"
+version = "0.1.8~ynh3"
 
 maintainers = ["studion79"]
 

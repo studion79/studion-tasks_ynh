@@ -49,9 +49,11 @@ popd
 #=================================================
 ynh_script_progression "Upgrading system configurations related to $app..."
 
-# Ensure uploads dir permissions (nginx must be able to read for direct serving)
+# Ensure uploads dir permissions (nginx must be able to read for direct serving).
+# Fix ALL subdirectories (avatars/, etc.) — they may have been created with a
+# restrictive umask (e.g. 750) that prevents nginx (www-data) from traversing them.
 chown -R "$app:www-data" "$data_dir/uploads"
-chmod 755 "$data_dir/uploads"
+find "$data_dir/uploads" -type d -exec chmod 755 {} \;
 find "$data_dir/uploads" -type f -exec chmod 644 {} \;
 
 # Ensure the app user is in the postdrop group (idempotent)

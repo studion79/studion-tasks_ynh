@@ -44,9 +44,10 @@ mkdir -p "$data_dir/uploads"
 # data_dir root: private to app
 chown "$app:$app" "$data_dir"
 chmod 750 "$data_dir"
-# uploads are served by nginx directly — must be readable by www-data
+# uploads are served by nginx directly — must be readable by www-data.
+# Use find to ensure ALL subdirectories are 755 (not just the root).
 chown -R "$app:www-data" "$data_dir/uploads"
-chmod 755 "$data_dir/uploads"
+find "$data_dir/uploads" -type d -exec chmod 755 {} \;
 
 # Symlink uploads so Next.js can serve files from /public/uploads
 rm -rf "$install_dir/public/uploads"
