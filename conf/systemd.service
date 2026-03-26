@@ -14,6 +14,8 @@ StandardError=inherit
 
 Restart=on-failure
 RestartSec=5s
+# New files (uploads) created with 644 so nginx can serve them directly
+UMask=0022
 
 # Security hardening
 NoNewPrivileges=yes

@@ -41,8 +41,12 @@ chown "$app:$app" "$install_dir/.env"
 ynh_script_progression "Setting up data directory..."
 
 mkdir -p "$data_dir/uploads"
-chown -R "$app:$app" "$data_dir"
-chmod -R 750 "$data_dir"
+# data_dir root: private to app
+chown "$app:$app" "$data_dir"
+chmod 750 "$data_dir"
+# uploads are served by nginx directly — must be readable by www-data
+chown -R "$app:www-data" "$data_dir/uploads"
+chmod 755 "$data_dir/uploads"
 
 # Symlink uploads so Next.js can serve files from /public/uploads
 rm -rf "$install_dir/public/uploads"

@@ -49,6 +49,11 @@ popd
 #=================================================
 ynh_script_progression "Upgrading system configurations related to $app..."
 
+# Ensure uploads dir permissions (nginx must be able to read for direct serving)
+chown -R "$app:www-data" "$data_dir/uploads"
+chmod 755 "$data_dir/uploads"
+find "$data_dir/uploads" -type f -exec chmod 644 {} \;
+
 # Ensure the app user is in the postdrop group (idempotent)
 usermod -a -G postdrop "$app"
 
