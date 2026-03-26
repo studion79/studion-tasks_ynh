@@ -28,7 +28,7 @@ popd
 #=================================================
 ynh_script_progression "Adding $app's configuration files..."
 
-auth_secret=$(ynh_string_random 64)
+auth_secret=$(ynh_string_random --length=64)
 ynh_app_setting_set --key=auth_secret --value="$auth_secret"
 
 ynh_config_add --template="app.env" --destination="$install_dir/.env"

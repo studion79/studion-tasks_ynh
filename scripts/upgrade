@@ -33,7 +33,7 @@ popd
 ynh_script_progression "Updating $app's configuration..."
 
 # Ensure auth_secret exists (first upgrade from a pre-secret install)
-ynh_app_setting_set_default --key=auth_secret --value="$(ynh_string_random 64)"
+ynh_app_setting_set_default --key=auth_secret --value="$(ynh_string_random --length=64)"
 
 ynh_config_add --template="app.env" --destination="$install_dir/.env"
 chmod 400 "$install_dir/.env"
