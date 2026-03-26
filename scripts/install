@@ -67,6 +67,10 @@ chown "$app:$app" "$data_dir/db.sqlite"
 #=================================================
 ynh_script_progression "Adding system configurations related to $app..."
 
+# Allow the app user to submit mail via Postfix sendmail
+# (postdrop group grants write access to Postfix maildrop queue)
+usermod -a -G postdrop "$app"
+
 ynh_config_add_nginx
 ynh_config_add_systemd
 yunohost service add "$app" --description="Task App service" --log="/var/log/$app/$app.log"

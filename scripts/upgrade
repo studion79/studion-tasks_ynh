@@ -49,6 +49,9 @@ popd
 #=================================================
 ynh_script_progression "Upgrading system configurations related to $app..."
 
+# Ensure the app user is in the postdrop group (idempotent)
+usermod -a -G postdrop "$app"
+
 ynh_config_add_nginx
 ynh_config_add_systemd
 yunohost service add "$app" --description="Task App service" --log="/var/log/$app/$app.log"
